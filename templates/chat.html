@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צ'אט עם העוזר</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- טקסט מבוא בתחילת האתר -->
+    <div class="intro-text">
+        <h2>ברוכים הבאים למחולל האתרים המתקדם שלנו!</h2>
+        <p>הקלד בקצרה מהי הרעיון שלך לאתר, ואני אעזור לך לתכנן אותו שלב אחר שלב.</p>
+    </div>
+
+    <div class="container">
+        <div class="chatbox">
+            <div class="messages">
+                {% for message in messages %}
+                    {% if message.role == 'user' %}
+                        <div class="message user-message">
+                            <div class="avatar">🧑</div>
+                            <div class="message-content">{{ message.content }}</div>
+                        </div>
+                    {% elif message.role == 'assistant' %}
+                        <div class="message assistant-message">
+                            <div class="avatar">🤖</div>
+                            <div class="message-content">{{ message.content }}</div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <form method="POST">
+                <!-- בתוך ה- <form method="POST"> -->
+                <textarea id="user-input-area" name="user_input" placeholder="הקלד את ההודעה שלך כאן" rows="1" required></textarea>
+                <!-- שאר הכפתורים נשארים -->
+                <div class="button-group">
+                    <button type="submit">שלח</button>
+                    <button type="button" id="toggle-summary"></button>
+                    <button type="submit" formaction="{{ url_for('reset') }}" formmethod="get">איפוס שיחה</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="summary" class="summary-panel">
+            <h3>סיכום האתר</h3>
+            <p>{{ summary }}</p>
+            <a href="{{ url_for('download_prompt') }}" class="download-button">📄 הורד את הפרומפט</a>
+            <button id="close-summary">סגור</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("toggle-summary").addEventListener("click", function() {
+            document.getElementById("summary").style.transform = "translateX(0)";
+        });
+
+        document.getElementById("close-summary").addEventListener("click", function() {
+            document.getElementById("summary").style.transform = "translateX(100%)";
+        });
+
+        const textarea = document.getElementById("user-input-area");
+
+        function autoResizeTextarea() {
+            // אפס גובה זמנית כדי לקבל את הגובה הטבעי הנדרש
+            textarea.style.height = 'auto';
+            // קבע את הגובה ל-scrollHeight (הגובה המינימלי להכיל את התוכן)
+            textarea.style.height = textarea.scrollHeight + 'px';
+
+            // אכיפת הגובה המקסימלי שהוגדר ב-CSS
+            const maxHeight = parseInt(window.getComputedStyle(textarea).maxHeight);
+            if (textarea.scrollHeight > maxHeight) {
+                textarea.style.overflowY = 'auto'; // הצג גלילה אם עברנו את המקסימום
+                textarea.style.height = maxHeight + 'px'; // קבע לגובה מקסימלי
+            } else {
+                textarea.style.overflowY = 'hidden'; // הסתר גלילה אם לא עברנו
+            }
+        }
+
+        // הוספת מאזין לאירוע input (כל שינוי בטקסט)
+        textarea.addEventListener('input', autoResizeTextarea);
+
+        // (אופציונלי) קריאה ראשונית אם יש תוכן התחלתי בתיבה
+        // autoResizeTextarea();
+    </script>
+</body>
+</html>
