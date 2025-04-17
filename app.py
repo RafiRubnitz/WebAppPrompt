@@ -10,6 +10,9 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'  # נדרש כדי להשתמש ב-session
 
+# Initialize the LLM with the Groq API key and model
+llm = create_llm("groq", api_key=os.getenv("GROQ_API_KEY"), model="llama3-70b-8192")
+
 
 @app.route("/", methods=["GET", "POST"])
 def chat():
@@ -70,8 +73,4 @@ def download_prompt():
     )
 
 if __name__ == "__main__":
-
-    # Initialize the LLM with the Groq API key and model
-    llm = create_llm("groq", api_key=os.getenv("GROQ_API_KEY"), model="llama3-70b-8192")
-
     app.run(debug=True)
