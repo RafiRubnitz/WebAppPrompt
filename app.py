@@ -2,8 +2,11 @@ from flask import Flask, render_template, request, session, redirect, url_for, s
 from io import BytesIO
 from dotenv import load_dotenv
 import os
+from markdown import markdown
+
 
 from llm import create_llm
+from process_prompt import PromptProcessor
 
 load_dotenv()
 
@@ -12,6 +15,9 @@ app.secret_key = 'your-secret-key'  # נדרש כדי להשתמש ב-session
 
 # Initialize the LLM with the Groq API key and model
 llm = create_llm("groq", api_key=os.getenv("GROQ_API_KEY"), model="llama3-70b-8192")
+
+# Initialize the PromptProcessor with the LLM
+prompt_processor = PromptProcessor(llm)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -47,9 +53,10 @@ def chat():
             }
         ]
 
-        summary_response = llm.chat(summary_prompt)
+        summary_response = prompt_processor.process_prompt(summary_prompt)
+        html_summary = markdown(summary_response)
 
-        session["site_summary"] = summary_response
+        session["site_summary"] = html_summary
 
     return render_template("chat.html", messages=session["messages"], summary=session["site_summary"])
 

@@ -45,7 +45,7 @@
 
         <div id="summary" class="summary-panel">
             <h3>סיכום האתר</h3>
-            <p>{{ summary }}</p>
+            <p>{{ summary | safe }}</p>
             <a href="{{ url_for('download_prompt') }}" class="download-button">📄 הורד את הפרומפט</a>
             <button id="close-summary">סגור</button>
         </div>
