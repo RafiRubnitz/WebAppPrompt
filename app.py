@@ -4,12 +4,13 @@ from groq import Groq
 from dotenv import load_dotenv
 import os
 
+from llm import create_llm
+
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'  # נדרש כדי להשתמש ב-session
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 @app.route("/", methods=["GET", "POST"])
 def chat():
@@ -25,12 +26,9 @@ def chat():
         user_input = request.form["user_input"]
         session["messages"].append({"role": "user", "content": user_input})
 
-        response = client.chat.completions.create(
-            model="llama3-70b-8192",
-            messages=session["messages"]
-        )
+        response = llm.chat(session["messages"])
 
-        ai_message = response.choices[0].message.content
+        ai_message = response
         session["messages"].append({"role": "assistant", "content": ai_message})
 
         # יצירת סיכום מעודכן על האתר
@@ -47,12 +45,9 @@ def chat():
             }
         ]
 
-        summary_response = client.chat.completions.create(
-            model="llama3-70b-8192",
-            messages=summary_prompt
-        )
+        summary_response = llm.chat(summary_prompt)
 
-        session["site_summary"] = summary_response.choices[0].message.content
+        session["site_summary"] = summary_response
 
     return render_template("chat.html", messages=session["messages"], summary=session["site_summary"])
 
@@ -76,4 +71,8 @@ def download_prompt():
     )
 
 if __name__ == "__main__":
+
+    # Initialize the LLM with the Groq API key and model
+    llm = create_llm("groq", api_key=os.getenv("GROQ_API_KEY"), model="llama3-70b-8192")
+    
     app.run(debug=True)
