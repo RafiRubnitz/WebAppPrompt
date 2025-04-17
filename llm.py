@@ -8,6 +8,7 @@ all LLMs should inherit from this class and implement the required methods.
 from abc import ABC, abstractmethod
 from typing import Any
 from groq import Groq
+import openai
 
 class LLM(ABC):
 
@@ -42,11 +43,30 @@ class GroqLLM(LLM):
         )
         return response.choices[0].message.content
 
+class OpenAIChatLLM(LLM):
+    """
+    A wrapper class for the OpenAI Chat LLM.
+    """
+
+    def __init__(self, api_key: str, model: str):
+        openai.api_key = api_key
+        openai.base_url = "https://api.together.xyz/v1"
+        self.model = model
+
+    def chat(self, messages: Any) -> str:
+        response = openai.ChatCompletion.create(
+            model=self.model,
+            messages=messages
+        )
+        return response["choices"][0]["message"]["content"]
+
 def create_llm(llm_name: str,api_key: str, model: str) -> LLM:
     """
     Factory function to create an LLM instance based on the specified model.
     """
     if llm_name == "groq":
         return GroqLLM(api_key=api_key, model=model)
+    elif llm_name == "openai":
+        return OpenAIChatLLM(api_key=api_key, model=model)
     else:
         raise ValueError(f"Unsupported model: {llm_name}")

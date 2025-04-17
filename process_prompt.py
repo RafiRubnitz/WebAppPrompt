@@ -9,7 +9,7 @@ Workflow:
 4. Refines the prompt based on the feedback.
 5. Returns the final version of the prompt to be sent to the user.
 """
-
+import time
 
 
 class PromptProcessor:
@@ -23,10 +23,18 @@ class PromptProcessor:
         """
         # Create a prompt based on the summary
         prompt = self._generate_prompt(summary)
+        print("logging")
+        time.sleep(1.5)  # Adding a delay to avoid rate limiting
+
         # Send the prompt to the LLM and get the response
         conclusion = self._over_view_prompt(prompt)
+        print("resul")
+        time.sleep(1.5)  # Adding a delay to avoid rate limiting
+
         # Process the response and generate the final prompt
         response = self._generate_final_prompt(conclusion,prompt)
+        print("final")
+
         # Return the final prompt
         return response
 

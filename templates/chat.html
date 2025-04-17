@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <title>צ'אט עם העוזר</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -31,16 +32,20 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            <form method="POST">
-                <!-- בתוך ה- <form method="POST"> -->
-                <textarea id="user-input-area" name="user_input" placeholder="הקלד את ההודעה שלך כאן" rows="1" required></textarea>
-                <!-- שאר הכפתורים נשארים -->
-                <div class="button-group">
+            <div class="button-group">
+                <!-- שלח + סיכום בטופס אחד -->
+                <form method="POST" style="display: contents;">
+                    <textarea id="user-input-area" name="user_input" placeholder="..." required></textarea>
                     <button type="submit">שלח</button>
-                    <button type="button" id="toggle-summary"></button>
-                    <button type="submit" formaction="{{ url_for('reset') }}" formmethod="get">איפוס שיחה</button>
-                </div>
-            </form>
+                    <button type="button" id="toggle-summary">?</button>
+                </form>
+
+                <!-- איפוס שיחה בטופס נפרד אבל מעוצב זהה -->
+                <form action="{{ url_for('reset') }}" method="get" style="display: contents;">
+                    <button type="submit">איפוס שיחה</button>
+                </form>
+            </div>
+
         </div>
 
         <div id="summary" class="summary-panel">

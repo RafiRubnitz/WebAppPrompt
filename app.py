@@ -17,7 +17,8 @@ app.secret_key = 'your-secret-key'  # נדרש כדי להשתמש ב-session
 llm = create_llm("groq", api_key=os.getenv("GROQ_API_KEY"), model="llama3-70b-8192")
 
 # Initialize the PromptProcessor with the LLM
-#prompt_processor = PromptProcessor(llm)
+#Test if the LLM is working
+# prompt_processor = PromptProcessor(llm)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -53,6 +54,7 @@ def chat():
             }
         ]
 
+        # Test if the LLM is working
         # summary_response = prompt_processor.process_prompt(summary_prompt)
         summary_response = llm.chat(summary_prompt)
         html_summary = markdown(summary_response)
@@ -63,8 +65,11 @@ def chat():
 
 @app.route("/reset")
 def reset():
-    session.pop("messages", None)
-    session.pop("site_summary", None)
+    # session.pop("messages", None)
+    #     # session.pop("site_summary", None)
+
+    # Clear the session data
+    session.clear()
     return redirect(url_for("chat"))
 
 @app.route("/download_prompt")
